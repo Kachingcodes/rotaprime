@@ -107,7 +107,7 @@ export default function ContactDrawer({ isOpen, onClose }) {
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-6">
+        <div className="flex items-center justify-between border-b border-white/10 px-6 lg:py-6 py-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-rotaract">
               Get in touch
@@ -129,8 +129,8 @@ export default function ContactDrawer({ isOpen, onClose }) {
         </div>
 
         {/* Form */}
-        <div className="flex-1 overflow-y-auto px-6 py-8">
-          <p className="mb-8 text-sm leading-6 text-white/60">
+        <div className="flex-1 overflow-y-auto px-6 lg:py-8 py-4">
+          <p className="lg:mb-8 mb-6 text-sm leading-6 text-white/60">
             Have a question, idea, or want to learn more about
             Rotaract Lagos Prime? Send us a message.
           </p>
@@ -214,7 +214,7 @@ export default function ContactDrawer({ isOpen, onClose }) {
                 value={formData.message}
                 onChange={handleChange}
                 required
-                rows={6}
+                rows={5}
                 placeholder="How can we help?"
                 className="w-full resize-none rounded-lg border border-white/10 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-white/35 focus:border-rotaract"
               />
