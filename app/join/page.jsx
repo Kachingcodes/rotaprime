@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 
 export default function JoinPage() {
@@ -89,15 +88,6 @@ export default function JoinPage() {
 
   return (
     <main className="min-h-screen bg-hero px-4 py-10 text-white sm:px-6 lg:px-8">
-        <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            pauseOnHover
-            theme="dark"
-        />
       <div className="mx-auto max-w-3xl">
 
         {/* Back to home */}

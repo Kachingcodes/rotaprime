@@ -24,7 +24,7 @@ export async function POST(request) {
     }
 
     // Save to Firestore
-    const docRef = await db.collection("contacts").add({
+    const docRef = await db.collection("messages").add({
       name: name.trim(),
       phone: phone.trim(),
       email: email.trim().toLowerCase(),
@@ -33,7 +33,7 @@ export async function POST(request) {
       createdAt: new Date(),
     });
 
-    console.log("Contact message saved:", docRef.id);
+    console.log("Message saved:", docRef.id);
 
     return NextResponse.json({
       success: true,
@@ -41,7 +41,7 @@ export async function POST(request) {
       id: docRef.id,
     });
   } catch (error) {
-    console.error("CONTACT API ERROR:", error);
+    console.error("MESSAGE API ERROR:", error);
 
     return NextResponse.json(
       {

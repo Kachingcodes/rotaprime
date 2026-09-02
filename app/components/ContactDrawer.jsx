@@ -28,8 +28,6 @@ export default function ContactDrawer({ isOpen, onClose }) {
     e.preventDefault();
 
     setLoading(true);
-    setError("");
-    setSuccess("");
 
     try {
       const response = await fetch("/api/contact", {
@@ -72,7 +70,7 @@ export default function ContactDrawer({ isOpen, onClose }) {
       // Close drawer after a short delay
       setTimeout(() => {
         onClose();
-      }, 1500);
+      }, 2500);
 
     } catch (error) {
       console.error("CONTACT FORM ERROR:", error);
