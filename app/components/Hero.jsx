@@ -10,7 +10,7 @@ export default function Hero() {
 
   return (
     // <section className="relative min-h-screen w-full overflow-hidden bg-hero text-white">
-    <section className="relative h-[720px] w-full overflow-hidden bg-hero text-white sm:min-h-screen sm:h-auto">
+    <section className="relative h-[100svh] w-full overflow-hidden bg-hero text-white sm:min-h-screen sm:h-auto">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
@@ -31,7 +31,7 @@ export default function Hero() {
 
       {/* Main container */}
       {/* <div className="relative z-10 flex min-h-screen flex-col px-5 sm:px-8 lg:px-12 xl:px-16"> */}
-      <div className="relative z-10 flex h-full flex-col px-5 sm:min-h-screen sm:h-auto sm:px-8 lg:px-12 xl:px-16">
+      <div className="relative z-10 flex min-h-[100svh] flex-col px-5 sm:min-h-screen sm:h-auto sm:px-8 lg:px-12 xl:px-16">
         {/* ================================
             Navigation
         ================================= */}

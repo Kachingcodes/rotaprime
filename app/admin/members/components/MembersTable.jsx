@@ -164,7 +164,7 @@ export default function MembersTable({
       {/* ========================================
           TABLE
       ======================================== */}
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-hidden hidden lg:block rounded-2xl border border-gray-200 bg-white shadow-sm">
 
         <div className="overflow-x-auto">
 
@@ -333,6 +333,140 @@ export default function MembersTable({
         </div>
 
       </div>
+
+      {/* MOBILE ONLY */}
+<div className="space-y-3 flex flex-col lg:hidden">
+
+  {members.map((member) => (
+    <div
+      key={member.id}
+      className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+    >
+
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3">
+
+        <div className="flex min-w-0 items-center gap-3">
+
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-rotaract/10 text-sm font-bold text-rotaract">
+            {(member.firstname?.[0] || "").toUpperCase()}
+            {(member.lastname?.[0] || "").toUpperCase()}
+          </div>
+
+          <div className="min-w-0">
+
+            <p className="truncate font-bold text-gray-900">
+              {member.firstname} {member.lastname}
+            </p>
+
+            <p className="truncate text-xs text-gray-500">
+              {member.email || "No email"}
+            </p>
+
+          </div>
+
+        </div>
+
+        {/* Mobile actions */}
+        <div data-member-actions>
+
+          <button
+            type="button"
+            onClick={(e) =>
+              handleOpenMenu(e, member.id)
+            }
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition ${
+              openMenu === member.id
+                ? "border-rotaract bg-rotaract/10 text-rotaract"
+                : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
+            }`}
+            aria-label="Member actions"
+          >
+            <MoreVertical size={18} />
+          </button>
+
+        </div>
+
+      </div>
+
+      {/* Details */}
+      <div className="mt-4 grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
+
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+            Phone
+          </p>
+
+          <p className="mt-1 truncate text-sm font-medium text-gray-700">
+            {member.phone || "—"}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+            Occupation
+          </p>
+
+          <p className="mt-1 truncate text-sm font-medium text-gray-700">
+            {member.occupation || "—"}
+          </p>
+        </div>
+
+      </div>
+
+      {/* Position */}
+      <div className="mt-4">
+
+        <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+          Position
+        </label>
+
+        <select
+          value={member.position?.id || ""}
+          onChange={(e) =>
+            onAssignPosition(
+              member,
+              e.target.value
+            )
+          }
+          disabled={saving}
+          className="mt-1.5 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-3 text-sm font-semibold text-gray-700 outline-none transition focus:border-rotaract focus:bg-white focus:ring-2 focus:ring-rotaract/10 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+
+          <option value="">
+            Member
+          </option>
+
+          {positions.map((position) => (
+            <option
+              key={position.id}
+              value={position.id}
+            >
+              {position.name}
+            </option>
+          ))}
+
+        </select>
+
+      </div>
+
+      {/* Status */}
+      <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+
+        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+          Membership status
+        </span>
+
+        <StatusBadge
+          status={member.status}
+        />
+
+      </div>
+
+    </div>
+  ))}
+
+</div>
 
 
       {/* ========================================
