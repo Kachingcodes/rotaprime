@@ -1,26 +1,102 @@
 @import "tailwindcss";
 
 :root {
+  /* ================================
+     Base
+     ================================ */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* ================================
+     Rotaract Brand Colors
+     ================================ */
+  --rotaract-cranberry: #d41367;
+  --rotaract-cranberry-dark: #b91059;
+  --rotaract-cranberry-light: #fce1ec;
+
+  --rotary-blue: #17458f;
+  --rotary-gold: #f7a81b;
+
+  /* ================================
+     Hero
+     ================================ */
+  --hero-background: #071522;
+  --hero-text: #ffffff;
+  --hero-muted: rgba(255, 255, 255, 0.75);
+
+  /* ================================
+     UI
+     ================================ */
+  --border: #e5e7eb;
+  --muted: #6b7280;
+
+  /* ================================
+     Fonts
+     ================================ */
+  --font-body: Arial, Helvetica, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+
+  --color-rotaract: var(--rotaract-cranberry);
+  --color-rotaract-dark: var(--rotaract-cranberry-dark);
+  --color-rotaract-light: var(--rotaract-cranberry-light);
+
+  --color-rotary-blue: var(--rotary-blue);
+  --color-rotary-gold: var(--rotary-gold);
+
+  --color-hero: var(--hero-background);
+
+  --font-sans: var(--font-body);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ================================
+   Global Reset
+   ================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ================================
+   Links
+   ================================ */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ================================
+   Buttons
+   ================================ */
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ================================
+   Selection
+   ================================ */
+
+::selection {
+  background: var(--rotaract-cranberry);
+  color: #ffffff;
 }
