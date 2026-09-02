@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function JoinPage() {
   const [formData, setFormData] = useState({
@@ -58,14 +61,19 @@ export default function JoinPage() {
       throw new Error(result.message || "Something went wrong.");
     }
 
-    console.log("Successfully saved:", result);
+    toast.success(
+    "Welcome to Rotaract Lagos Prime! 🎉 You have successfully joined. We will contact you soon."
+    );
 
-    // Go back to Hero after successful Firestore submission
+    // Give the user enough time to see the toast
+    setTimeout(() => {
     window.location.href = "/";
+    }, 3200);
+
   } catch (error) {
     console.error("FORM SUBMISSION ERROR:", error);
 
-    setError(
+    toast.error(
       error.message ||
         "Unable to submit your application. Please try again."
     );
@@ -77,6 +85,15 @@ export default function JoinPage() {
 
   return (
     <main className="min-h-screen bg-hero px-4 py-10 text-white sm:px-6 lg:px-8">
+        <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            theme="dark"
+        />
       <div className="mx-auto max-w-3xl">
 
         {/* Back to home */}

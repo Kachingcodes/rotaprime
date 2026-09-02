@@ -2,8 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import ContactDrawer from "./ContactDrawer";
 
 export default function Hero() {
+  const [contactOpen, setContactOpen] = useState(false);
+
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-hero text-white">
       {/* Background Image */}
@@ -49,17 +53,18 @@ export default function Hero() {
           <div className="flex items-center gap-2 sm:gap-4">
 
             {/* Contact */}
-            <Link
-              href="#contact"
-              className="rounded-full border border-white/30 px-4 py-2.5 text-xs font-semibold text-white transition duration-300 hover:border-white hover:bg-white/10 sm:px-5 sm:py-3 sm:text-sm"
-            >
-              CONTACT US
-            </Link>
+            <button
+                type="button"
+                onClick={() => setContactOpen(true)}
+                className="text-sm font-medium text-white/80 transition hover:text-white cursor-pointer border-rotaract border rounded-full hover:bg-rotaract/10 px-4 py-2 sm:px-5 sm:py-2.5 transition duration-300 hover:scale-105"
+                >
+                CONTACT US
+                </button>
 
             {/* Join */}
             <Link
               href="/join"
-              className="rounded-full bg-rotaract px-5 py-2.5 text-xs font-bold transition duration-300 hover:scale-105 hover:bg-rotaract-dark sm:px-6 sm:py-3 sm:text-sm"
+              className="rounded-full bg-rotaract px-5 py-2.5 text-sm font-bold transition duration-300 hover:scale-105 hover:bg-rotaract-dark sm:px-6 sm:py-3 sm:text-sm"
             >
               JOIN US
             </Link>
@@ -211,6 +216,12 @@ export default function Hero() {
           aria-hidden="true"
         />
       </div>
+
+      <ContactDrawer
+        isOpen={contactOpen}
+        onClose={() => setContactOpen(false)}
+        />
+
     </section>
   );
 }
