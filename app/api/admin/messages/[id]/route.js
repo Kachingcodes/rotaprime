@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase-admin";
+import { db } from "@/lib/db";
 
 /*
   PATCH
@@ -16,7 +16,6 @@ export async function PATCH(request, { params }) {
     const { id } = await params;
 
     const data = await request.json();
-
     const { status } = data;
 
     const allowedStatuses = [
@@ -35,14 +34,17 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    const messageRef = db
-      .collection("messages")
-      .doc(id);
+    const result = await db.query(
+      `
+        UPDATE messages
+        SET status = $1
+        WHERE id = $2
+        RETURNING id, status
+      `,
+      [status, id]
+    );
 
-    const messageSnapshot =
-      await messageRef.get();
-
-    if (!messageSnapshot.exists) {
+    if (result.rows.length === 0) {
       return NextResponse.json(
         {
           success: false,
@@ -52,16 +54,11 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    await messageRef.update({
-      status,
-    });
-
     return NextResponse.json({
       success: true,
       message: "Message status updated successfully.",
-      status,
+      status: result.rows[0].status,
     });
-
   } catch (error) {
     console.error(
       "UPDATE MESSAGE STATUS ERROR:",
