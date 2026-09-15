@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "postinstall": "prisma skills sync || exit 0"
+    "start": "next start"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
