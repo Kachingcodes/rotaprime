@@ -45,7 +45,7 @@ export default function MembersPage() {
 
       setPositions(
         (data.positions || []).filter(
-          (position) => position.active
+          (position) => position.status === "active"
         )
       );
     } catch (error) {
@@ -81,29 +81,18 @@ async function updateMember(memberId, updates) {
     }
 
     setMembers((current) =>
-      current.map((member) => {
-        if (member.id !== memberId) {
-          return member;
-        }
-
-        return {
-          ...member,
-          ...updates,
-        };
-      })
+      current.map((member) =>
+        member.id === memberId
+          ? data.member
+          : member
+      )
     );
 
-    // Keep the drawer in sync too
-    setSelectedMember((current) => {
-      if (!current || current.id !== memberId) {
-        return current;
-      }
-
-      return {
-        ...current,
-        ...updates,
-      };
-    });
+    setSelectedMember((current) =>
+      current?.id === memberId
+        ? data.member
+        : current
+    );
 
   } catch (error) {
     console.error("UPDATE MEMBER ERROR:", error);
@@ -119,38 +108,35 @@ async function updateMember(memberId, updates) {
 
   async function acceptMember(member) {
     await updateMember(member.id, {
-      status: "accepted",
+      status: "Accepted",
     });
   }
 
   async function rejectMember(member) {
   await updateMember(member.id, {
-    status: "rejected",
+    status: "Rejected",
   });
 }
 
-  async function assignPosition(member, positionId) {
-    if (!positionId) {
-      await updateMember(member.id, {
-        position: null,
-      });
-
-      return;
-    }
-
-    const position = positions.find(
-      (item) => item.id === positionId
-    );
-
-    if (!position) return;
-
+async function assignPosition(member, positionId) {
+  if (!positionId) {
     await updateMember(member.id, {
-      position: {
-        id: position.id,
-        name: position.name,
-      },
+      position: null,
     });
+
+    return;
   }
+
+  const position = positions.find(
+    (item) => String(item.id) === String(positionId)
+  );
+
+  if (!position) return;
+
+  await updateMember(member.id, {
+    position: position.id,
+  });
+}
 
   const searchTerm = search.toLowerCase();
 

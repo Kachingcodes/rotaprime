@@ -15,10 +15,6 @@ export default function JoinPage() {
     dob: "",
     address: "",
     occupation: "",
-
-    status: "pending",
-    position: "null",
-
   });
 
   const [loading, setLoading] = useState(false);

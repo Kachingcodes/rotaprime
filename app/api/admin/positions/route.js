@@ -1,31 +1,23 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase-admin";
-import { FieldValue } from "firebase-admin/firestore";
+import { db } from "@/lib/db";
 
 // ========================================
-// GET - Load positions
+// GET - Load all positions
 // ========================================
 
 export async function GET() {
   try {
-    const systemRef = db
-      .collection("settings")
-      .doc("system");
-
-    const snapshot = await systemRef.get();
-
-    if (!snapshot.exists) {
-      return NextResponse.json({
-        success: true,
-        positions: [],
-      });
-    }
-
-    const data = snapshot.data();
+    const result = await db.query(
+      `
+        SELECT id, name
+        FROM positions
+        ORDER BY id ASC
+      `
+    );
 
     return NextResponse.json({
       success: true,
-      positions: data.positions || [],
+      positions: result.rows,
     });
   } catch (error) {
     console.error("GET POSITIONS ERROR:", error);
@@ -43,7 +35,7 @@ export async function GET() {
 
 
 // ========================================
-// POST - Add position
+// POST - Add a new position
 // ========================================
 
 export async function POST(request) {
@@ -52,6 +44,7 @@ export async function POST(request) {
 
     const name = data.name?.trim();
 
+    // Validate required field
     if (!name) {
       return NextResponse.json(
         {
@@ -62,25 +55,18 @@ export async function POST(request) {
       );
     }
 
-    const systemRef = db
-      .collection("settings")
-      .doc("system");
-
-    const snapshot = await systemRef.get();
-
-    const existingPositions =
-      snapshot.exists
-        ? snapshot.data().positions || []
-        : [];
-
-    // Prevent duplicate names
-    const alreadyExists = existingPositions.some(
-      (position) =>
-        position.name?.toLowerCase() ===
-        name.toLowerCase()
+    // Check for duplicate position name
+    const existingPosition = await db.query(
+      `
+        SELECT id
+        FROM positions
+        WHERE LOWER(name) = LOWER($1)
+        LIMIT 1
+      `,
+      [name]
     );
 
-    if (alreadyExists) {
+    if (existingPosition.rows.length > 0) {
       return NextResponse.json(
         {
           success: false,
@@ -90,29 +76,21 @@ export async function POST(request) {
       );
     }
 
-    const position = {
-      id: `position_${Date.now()}`,
-      name,
-      active: true,
-    };
-
-    const updatedPositions = [
-      ...existingPositions,
-      position,
-    ];
-
-    await systemRef.set(
-      {
-        positions: updatedPositions,
-      },
-      { merge: true }
+    // Create position
+    const result = await db.query(
+      `
+        INSERT INTO positions (name)
+        VALUES ($1)
+        RETURNING id, name
+      `,
+      [name]
     );
 
     return NextResponse.json(
       {
         success: true,
         message: "Position added successfully.",
-        position,
+        position: result.rows[0],
       },
       { status: 201 }
     );

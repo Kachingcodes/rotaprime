@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase-admin";
+import { db } from "../../../lib/db";
 
 export async function POST(request) {
   try {
@@ -12,7 +12,6 @@ export async function POST(request) {
       message,
     } = body;
 
-    // Validate required fields
     if (!name || !phone || !email || !message) {
       return NextResponse.json(
         {
@@ -23,22 +22,29 @@ export async function POST(request) {
       );
     }
 
-    // Save to Firestore
-    const docRef = await db.collection("messages").add({
-      name: name.trim(),
-      phone: phone.trim(),
-      email: email.trim().toLowerCase(),
-      message: message.trim(),
-      status: "unread",
-      createdAt: new Date(),
-    });
+    const result = await db.query(
+      `INSERT INTO messages
+        (name, phone, email, message)
+       VALUES
+        ($1, $2, $3, $4)
+       RETURNING id, status, created_at`,
+      [
+        name.trim(),
+        phone.trim(),
+        email.trim().toLowerCase(),
+        message.trim(),
+      ]
+    );
 
-    console.log("Message saved:", docRef.id);
+    const savedMessage = result.rows[0];
+
+    console.log("Message saved:", savedMessage.id);
 
     return NextResponse.json({
       success: true,
       message: "Your message has been sent successfully.",
-      id: docRef.id,
+      id: savedMessage.id,
+      status: savedMessage.status,
     });
   } catch (error) {
     console.error("MESSAGE API ERROR:", error);

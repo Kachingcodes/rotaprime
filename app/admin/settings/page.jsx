@@ -106,65 +106,70 @@ export default function SettingsPage() {
   }
 
   async function togglePosition(position) {
-    try {
-      setUpdatingId(position.id);
-      setError("");
-      setSuccess("");
+  try {
+    setUpdatingId(position.id);
+    setError("");
+    setSuccess("");
 
-      const response = await fetch(
-        `/api/admin/positions/${position.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            active: !position.active,
-          }),
-        }
-      );
+    const newStatus =
+      position.status === "active"
+        ? "inactive"
+        : "active";
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-            "Unable to update position."
-        );
+    const response = await fetch(
+      `/api/admin/positions/${position.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: newStatus,
+        }),
       }
+    );
 
-      setPositions((current) =>
-        current.map((item) =>
-          item.id === position.id
-            ? {
-                ...item,
-                active: !position.active,
-              }
-            : item
-        )
-      );
+    const data = await response.json();
 
-      setSuccess(
-        `${position.name} ${
-          !position.active
-            ? "activated"
-            : "deactivated"
-        } successfully.`
+    if (!response.ok) {
+      throw new Error(
+        data.message || "Unable to update position."
       );
-    } catch (error) {
-      console.error(
-        "UPDATE POSITION ERROR:",
-        error
-      );
-
-      setError(
-        error.message ||
-          "Unable to update position."
-      );
-    } finally {
-      setUpdatingId(null);
     }
+
+    setPositions((current) =>
+      current.map((item) =>
+        item.id === position.id
+          ? {
+              ...item,
+              status: newStatus,
+            }
+          : item
+      )
+    );
+
+    setSuccess(
+      `${position.name} ${
+        newStatus === "active"
+          ? "activated"
+          : "deactivated"
+      } successfully.`
+    );
+  } catch (error) {
+    console.error(
+      "UPDATE POSITION ERROR:",
+      error
+    );
+
+    setError(
+      error.message ||
+        "Unable to update position."
+    );
+  } finally {
+    setUpdatingId(null);
   }
+}
+
 
   return (
     <main className="space-y-8">
@@ -335,12 +340,12 @@ export default function SettingsPage() {
 
                   <p
                     className={`mt-1 text-xs font-semibold ${
-                      position.active
+                      position.status === "active"
                         ? "text-green-600"
                         : "text-gray-400"
                     }`}
                   >
-                    {position.active
+                    {position.status === "active"
                       ? "Active"
                       : "Inactive"}
                   </p>
@@ -374,7 +379,7 @@ export default function SettingsPage() {
                     <Power size={16} />
                   )}
 
-                  {position.active
+                  {position.status === "active"
                     ? "DEACTIVATE"
                     : "ACTIVATE"}
 

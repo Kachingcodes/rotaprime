@@ -1,39 +1,56 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase-admin";
-import { FieldValue } from "firebase-admin/firestore";
+import { db } from "@/lib/db";
 
 // GET - Load all members
 export async function GET() {
   try {
-    const snapshot = await db
-      .collection("members")
-      .orderBy("createdAt", "desc")
-      .get();
+    const result = await db.query(`
+      SELECT
+        m.id,
+        m.lastname,
+        m.firstname,
+        m.gender,
+        m.phone,
+        m.email,
+        m.dob,
+        m.occupation,
+        m.address,
+        m.position_id,
+        p.name AS position,
+        m.status,
+        m.created_at
+      FROM members m
+      LEFT JOIN positions p
+        ON m.position_id = p.id
+      ORDER BY m.created_at DESC
+    `);
 
-    const members = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
+    const positionsResult = await db.query(`
+      SELECT id, name, status
+      FROM positions
+      ORDER BY id ASC
+    `);
 
-      // Convert Firestore timestamp so it can be sent as JSON
-      createdAt: doc.data().createdAt?.toDate?.().toISOString() || null,
+    const members = result.rows.map((member) => ({
+      id: member.id,
+      lastname: member.lastname,
+      firstname: member.firstname,
+      gender: member.gender,
+      phone: member.phone,
+      email: member.email,
+      dob: member.dob,
+      occupation: member.occupation,
+      address: member.address,
+      positionId: member.position_id,
+      position: member.position,
+      status: member.status,
+      createdAt: member.created_at,
     }));
-
-    // Load positions from settings/system
-    const settingsSnapshot = await db
-      .collection("settings")
-      .doc("system")
-      .get();
-
-    const settingsData = settingsSnapshot.exists
-      ? settingsSnapshot.data()
-      : {};
-
-    const positions = settingsData.positions || [];
 
     return NextResponse.json({
       success: true,
       members,
-      positions,
+      positions: positionsResult.rows,
     });
   } catch (error) {
     console.error("GET MEMBERS ERROR:", error);
@@ -78,37 +95,84 @@ export async function POST(request) {
     ) {
       return NextResponse.json(
         {
+          success: false,
           message: "Please fill in all required fields.",
         },
         { status: 400 }
       );
     }
 
-    // Create member document
-    const memberRef = await db.collection("members").add({
-      lastname: lastname.trim(),
-      firstname: firstname.trim(),
-      gender,
-      phone: phone.trim(),
-      email: email.trim().toLowerCase(),
-      dob,
-      address: address.trim(),
-      occupation: occupation.trim(),
+    // Find the Member position
+    const memberPosition = await db.query(
+      `
+        SELECT id
+        FROM positions
+        WHERE LOWER(name) = 'member'
+        LIMIT 1
+      `
+    );
 
-      // New members start as pending
-      status: "pending",
+    if (memberPosition.rows.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "The Member position does not exist.",
+        },
+        { status: 500 }
+      );
+    }
 
-      // No position initially
-      position: null,
+    const memberPositionId = memberPosition.rows[0].id;
 
-      createdAt: FieldValue.serverTimestamp(),
-    });
+    // Create member
+    const result = await db.query(
+      `
+        INSERT INTO members (
+          lastname,
+          firstname,
+          gender,
+          phone,
+          email,
+          dob,
+          address,
+          occupation,
+          position_id
+        )
+        VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9
+        )
+        RETURNING
+          id,
+          lastname,
+          firstname,
+          gender,
+          phone,
+          email,
+          dob,
+          address,
+          occupation,
+          position_id,
+          status,
+          created_at
+      `,
+      [
+        lastname.trim(),
+        firstname.trim(),
+        gender,
+        phone.trim(),
+        email.trim().toLowerCase(),
+        dob,
+        address.trim(),
+        occupation.trim(),
+        memberPositionId,
+      ]
+    );
 
     return NextResponse.json(
       {
         success: true,
         message: "Member added successfully.",
-        id: memberRef.id,
+        member: result.rows[0],
       },
       { status: 201 }
     );
@@ -117,6 +181,7 @@ export async function POST(request) {
 
     return NextResponse.json(
       {
+        success: false,
         message: error.message || "Unable to add member.",
       },
       { status: 500 }

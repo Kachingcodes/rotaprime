@@ -253,7 +253,7 @@ export default function MembersTable({
                   <td className="px-6 py-5">
 
                     <select
-                      value={member.position?.id || ""}
+                      value={member.positionId || ""}
                       onChange={(e) =>
                         onAssignPosition(
                           member,
@@ -422,7 +422,7 @@ export default function MembersTable({
         </label>
 
         <select
-          value={member.position?.id || ""}
+          value={member.positionId || ""}
           onChange={(e) =>
             onAssignPosition(
               member,
@@ -529,7 +529,7 @@ export default function MembersTable({
 
 
             {/* Accept */}
-            {activeMember.status !== "accepted" && (
+            {activeMember.status !== "Accepted" && (
               <button
                 type="button"
                 disabled={saving}
@@ -548,7 +548,7 @@ export default function MembersTable({
 
 
             {/* Reject */}
-            {activeMember.status !== "rejected" && (
+            {activeMember.status !== "Rejected" && (
             <button
                 type="button"
                 disabled={saving}

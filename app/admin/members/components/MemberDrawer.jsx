@@ -497,13 +497,6 @@ export default function MemberDrawer({
                     value={member.position?.name || "No position"}
                   />
 
-                  <Detail
-                    label="Status"
-                    value={
-                      <StatusBadge status={member.status} />
-                    }
-                  />
-
                 </div>
 
               </section>
@@ -572,7 +565,7 @@ export default function MemberDrawer({
 
           )}
 
-        </div>
+        </div> 
 
       </aside>
 

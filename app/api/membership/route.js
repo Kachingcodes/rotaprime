@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase-admin";
+import { db } from "../../../lib/db";
 
 export async function POST(request) {
   try {
@@ -35,26 +35,34 @@ export async function POST(request) {
       );
     }
 
-    const docRef = await db.collection("members").add({
-      lastname: lastname.trim(),
-      firstname: firstname.trim(),
-      gender,
-      phone: phone.trim(),
-      email: email.trim().toLowerCase(),
-      dob,
-      address: address.trim(),
-      occupation: occupation.trim(),
-      status: "pending",
-      createdAt: new Date(),
-    });
+    const result = await db.query(
+      `INSERT INTO members
+        (lastname, firstname, gender, phone, email, dob, address, occupation)
+       VALUES
+        ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING id, status, created_at`,
+      [
+        lastname.trim(),
+        firstname.trim(),
+        gender,
+        phone.trim(),
+        email.trim().toLowerCase(),
+        dob,
+        address.trim(),
+        occupation.trim(),
+      ]
+    );
 
-    console.log("Member saved:", docRef.id);
+    const member = result.rows[0];
+
+    console.log("Member saved:", member.id);
 
     return NextResponse.json(
       {
         success: true,
         message: "Membership application submitted successfully.",
-        id: docRef.id,
+        id: member.id,
+        status: member.status,
       },
       { status: 200 }
     );

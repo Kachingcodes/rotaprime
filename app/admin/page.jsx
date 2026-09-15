@@ -89,17 +89,17 @@ export default function AdminDashboard() {
 
   const acceptedMembers = members.filter(
     (member) =>
-      member.status === "accepted"
+      member.status === "Accepted"
   ).length;
 
   const pendingMembers = members.filter(
     (member) =>
-      member.status === "pending"
+      member.status === "Pending"
   ).length;
 
   const rejectedMembers = members.filter(
     (member) =>
-      member.status === "rejected"
+      member.status === "Rejected"
   ).length;
 
   const totalMessages = messages.length;
@@ -913,11 +913,11 @@ export default function AdminDashboard() {
 
 function MemberStatus({ status }) {
   const styles = {
-    accepted:
+    Accepted:
       "bg-green-50 text-green-600",
-    pending:
+    Pending:
       "bg-yellow-50 text-yellow-600",
-    rejected:
+    Rejected:
       "bg-red-50 text-red-600",
   };
 
