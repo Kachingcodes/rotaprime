@@ -152,7 +152,7 @@ export default function WelfarePage() {
   };
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6 p-6">
       <WelfareHeader />
 
       <WelfareStats
