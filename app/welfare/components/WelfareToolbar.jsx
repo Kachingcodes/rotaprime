@@ -49,8 +49,8 @@ export default function WelfareToolbar({
           <option value="All">All Attendance</option>
           <option value="Present">Present</option>
           <option value="Absent">Absent</option>
-          <option value="Present">Late</option>
-          <option value="Absent">Excused</option>
+          <option value="Late">Late</option>
+          <option value="Excused">Excused</option>
         </select>
       </div>
     </div>
