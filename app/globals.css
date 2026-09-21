@@ -63,6 +63,14 @@
 
 html {
   scroll-behavior: smooth;
+
+  /* Hide scrollbar - Firefox */
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar - Chrome, Edge, Safari */
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -72,6 +80,14 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+
+  /* Hide scrollbar - Firefox */
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar - Chrome, Edge, Safari */
+body::-webkit-scrollbar {
+  display: none;
 }
 
 /* ================================

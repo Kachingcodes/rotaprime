@@ -4,6 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  UserRoundPlus,
+  MessageCircle,
+  Settings,
+  Menu,
+  HeartHandshake,
+} from "lucide-react";
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
@@ -13,135 +21,27 @@ export default function AdminLayout({ children }) {
     {
       name: "Dashboard",
       href: "/admin",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <rect
-            x="3"
-            y="3"
-            width="7"
-            height="7"
-            rx="1"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <rect
-            x="14"
-            y="3"
-            width="7"
-            height="7"
-            rx="1"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <rect
-            x="3"
-            y="14"
-            width="7"
-            height="7"
-            rx="1"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <rect
-            x="14"
-            y="14"
-            width="7"
-            height="7"
-            rx="1"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-        </svg>
-      ),
+      icon: LayoutDashboard,
     },
-
     {
       name: "Members",
       href: "/admin/members",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M16 21V19C16 16.7909 14.2091 15 12 15H6C3.79086 15 2 16.7909 2 19V21"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <circle
-            cx="9"
-            cy="7"
-            r="4"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <path
-            d="M19 8V14M22 11H16"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
-      ),
+      icon: UserRoundPlus,
     },
-
     {
       name: "Messages",
       href: "/admin/messages",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M21 11.5C21 16.1944 16.9706 20 12 20C10.4415 20 8.98291 19.6334 7.70647 18.9907L3 20L4.29984 16.1994C3.47747 14.8782 3 13.3306 3 11.5C3 6.80558 7.02944 3 12 3C16.9706 3 21 6.80558 21 11.5Z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
+      icon: MessageCircle,
     },
-
     {
       name: "Settings",
       href: "/admin/settings",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M12 15.5C13.933 15.5 15.5 13.933 15.5 12C15.5 10.067 13.933 8.5 12 8.5C10.067 8.5 8.5 10.067 8.5 12C8.5 13.933 10.067 15.5 12 15.5Z"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-
-          <path
-            d="M19.4 15C19.8 14.2 20 13.1 20 12C20 10.9 19.8 9.8 19.4 9L21 7L19 5L17 6.6C16.2 6.2 15.1 6 14 6L13 3H11L10 6C8.9 6 7.8 6.2 7 6.6L5 5L3 7L4.6 9C4.2 9.8 4 10.9 4 12C4 13.1 4.2 14.2 4.6 15L3 17L5 19L7 17.4C7.8 17.8 8.9 18 10 18L11 21H13L14 18C15.1 18 16.2 17.8 17 17.4L19 19L21 17L19.4 15Z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
+      icon: Settings,
+    },
+    {
+    name: "Welfare",
+    href: "/welfare",
+    icon: HeartHandshake,
     },
   ];
 
@@ -204,20 +104,25 @@ export default function AdminLayout({ children }) {
           </p>
 
           {navItems.map((item) => {
+            const Icon = item.icon;
             const active = isActive(item.href);
 
             return (
               <Link
-                key={item.href}
+                key={item.name}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition ${
                   active
-                    ? "bg-rotaract/10 text-rotaract"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-gray-100 text-gray-900"
+                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
-                {item.icon}
+                <Icon
+                  size={20}
+                  strokeWidth={active ? 2.2 : 2}
+                  className="shrink-0"
+                />
 
                 <span>{item.name}</span>
               </Link>
@@ -227,7 +132,6 @@ export default function AdminLayout({ children }) {
 
         {/* Bottom */}
         <div className="border-t border-gray-100 p-4">
-
           <Link
             href="/"
             className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-50 hover:text-gray-900"
@@ -235,7 +139,6 @@ export default function AdminLayout({ children }) {
             <span>←</span>
             Back to website
           </Link>
-
         </div>
       </aside>
 
@@ -252,19 +155,7 @@ export default function AdminLayout({ children }) {
             className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 lg:hidden"
             aria-label="Open menu"
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path
-                d="M4 6H20M4 12H20M4 18H20"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+            <Menu size={24} strokeWidth={2} />
           </button>
 
           {/* Page title */}
