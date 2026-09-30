@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ArrowUp } from "lucide-react";
 
 import WelfareHeader from "./components/WelfareHeader";
 import WelfareStats from "./components/WelfareStats";
@@ -31,14 +32,28 @@ export default function WelfarePage() {
   const [selectedMember, setSelectedMember] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [user, setUser] = useState(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  
   const [selectedDate, setSelectedDate] = useState(
     getLocalDateString()
   );
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+  const handleScroll = () => {
+    setShowScrollTop(window.scrollY > 400);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  handleScroll();
+
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, []);
 
   /*
     Lock the page behind the member drawer
@@ -453,6 +468,24 @@ useEffect(() => {
         onAttendanceChange={toggleAttendance}
         selectedDate={selectedDate}
       />
+
+      {showScrollTop && (
+        <button
+          type="button"
+          onClick={() =>
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            })
+          }
+          className="fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-rotaract text-white shadow-lg transition hover:bg-rotaract-dark"
+          aria-label="Scroll to top"
+          title="Back to top"
+        >
+          <ArrowUp size={19} strokeWidth={2.5} />
+        </button>
+      )}
+
     </div>
   );
 }
