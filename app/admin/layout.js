@@ -1,200 +1,288 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  UserRoundPlus,
-  MessageCircle,
-  Settings,
-  Menu,
-  HeartHandshake,
+LayoutDashboard,
+UserRoundPlus,
+MessageCircle,
+Settings,
+Menu,
+HeartHandshake,
+Moon,
+Sun,
 } from "lucide-react";
 
 export default function AdminLayout({ children }) {
-  const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+const pathname = usePathname();
+const [sidebarOpen, setSidebarOpen] = useState(false);
+const [darkMode, setDarkMode] = useState(false);
+const [user, setUser] = useState(null);
 
-  const navItems = [
-    {
-      name: "Dashboard",
-      href: "/admin",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "Members",
-      href: "/admin/members",
-      icon: UserRoundPlus,
-    },
-    {
-      name: "Messages",
-      href: "/admin/messages",
-      icon: MessageCircle,
-    },
-    {
-      name: "Settings",
-      href: "/admin/settings",
-      icon: Settings,
-    },
-    {
-    name: "Welfare",
-    href: "/welfare",
-    icon: HeartHandshake,
-    },
-  ];
+const navItems = [
+{
+name: "Dashboard",
+href: "/admin",
+icon: LayoutDashboard,
+},
+{
+name: "Members",
+href: "/admin/members",
+icon: UserRoundPlus,
+},
+{
+name: "Messages",
+href: "/admin/messages",
+icon: MessageCircle,
+},
+{
+name: "Settings",
+href: "/admin/settings",
+icon: Settings,
+},
+{
+name: "Welfare",
+href: "/welfare",
+icon: HeartHandshake,
+},
+];
 
-  function isActive(href) {
-    if (href === "/admin") {
-      return pathname === "/admin";
+useEffect(() => {
+  loadCurrentUser();
+}, []);
+
+async function loadCurrentUser() {
+  try {
+    const response = await fetch("/api/account/me");
+    const data = await response.json();
+
+    if (response.ok) {
+      setUser(data.user);
     }
-
-    return pathname.startsWith(href);
+  } catch (error) {
+    console.error(
+      "LOAD CURRENT USER ERROR:",
+      error
+    );
   }
+}
 
-  return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+/* ================================
+Load saved theme
+================================ */
 
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+useEffect(() => {
+const savedTheme = localStorage.getItem("theme");
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-gray-200 bg-white transition-transform duration-300 lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
 
-        {/* Logo */}
-        <div className="flex h-24 items-center border-b border-gray-100 px-6">
-          <Link href="/admin" className="flex items-center">
-            <div className="relative h-16 w-16">
-              <Image
-                src="/images/logo2.png"
-                alt="Rotaract Lagos Prime"
-                fill
-                priority
-                className="object-contain"
-              />
-            </div>
+if (savedTheme === "dark") {
+  setDarkMode(true);
+  document.documentElement.classList.add("dark");
+}
 
-            <div className="ml-3">
-              <p className="text-sm font-bold">
-                Rotaract
-              </p>
 
-              <p className="text-xs text-gray-500">
-                Lagos Prime
-              </p>
-            </div>
-          </Link>
+}, []);
+
+/* ================================
+Toggle theme
+================================ */
+
+function toggleDarkMode() {
+const nextMode = !darkMode;
+
+
+setDarkMode(nextMode);
+
+if (nextMode) {
+  document.documentElement.classList.add("dark");
+  localStorage.setItem("theme", "dark");
+} else {
+  document.documentElement.classList.remove("dark");
+  localStorage.setItem("theme", "light");
+}
+
+}
+
+function isActive(href) {
+if (href === "/admin") {
+return pathname === "/admin";
+}
+
+return pathname.startsWith(href);
+
+}
+
+return ( <div className="min-h-screen bg-background text-foreground">
+
+  {/* Mobile overlay */}
+  {sidebarOpen && (
+    <div
+      className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+      onClick={() => setSidebarOpen(false)}
+    />
+  )}
+
+  {/* Sidebar */}
+  <aside
+    className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-border bg-card transition-transform duration-300 lg:translate-x-0 ${
+      sidebarOpen ? "translate-x-0" : "-translate-x-full"
+    }`}
+  >
+
+    {/* Logo */}
+    <div className="flex h-24 items-center border-b border-border px-6">
+      <Link href="/admin" className="flex items-center">
+        <div className="relative h-16 w-16">
+          <Image
+            src="/images/logo2.png"
+            alt="Rotaract Lagos Prime"
+            fill
+            priority
+            className="object-contain"
+          />
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 space-y-2 px-4 py-6">
-
-          <p className="mb-4 px-3 text-xs font-bold uppercase tracking-wider text-gray-400">
-            Administration
+        <div className="ml-3">
+          <p className="text-sm font-bold">
+            Rotaract
           </p>
 
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
-
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition ${
-                  active
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                }`}
-              >
-                <Icon
-                  size={20}
-                  strokeWidth={active ? 2.2 : 2}
-                  className="shrink-0"
-                />
-
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Bottom */}
-        <div className="border-t border-gray-100 p-4">
-          <Link
-            href="/"
-            className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-50 hover:text-gray-900"
-          >
-            <span>←</span>
-            Back to website
-          </Link>
+          <p className="text-xs text-muted">
+            Lagos Prime
+          </p>
         </div>
-      </aside>
+      </Link>
+    </div>
 
-      {/* Main area */}
-      <div className="lg:pl-64">
+    {/* Navigation */}
+    <nav className="flex-1 space-y-2 px-4 py-6">
 
-        {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+      <p className="mb-4 px-3 text-xs font-bold uppercase tracking-wider text-muted">
+        Administration
+      </p>
 
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 lg:hidden"
-            aria-label="Open menu"
+      {navItems.map((item) => {
+        const Icon = item.icon;
+        const active = isActive(item.href);
+
+        return (
+          <Link
+            key={item.name}
+            href={item.href}
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition ${
+              active
+                ? "bg-hover text-foreground"
+                : "text-muted hover:bg-hover hover:text-foreground"
+            }`}
           >
-            <Menu size={24} strokeWidth={2} />
-          </button>
+            <Icon
+              size={20}
+              strokeWidth={active ? 2.2 : 2}
+              className="shrink-0"
+            />
 
-          {/* Page title */}
-          <div className="hidden sm:block">
-            <h1 className="text-lg font-bold">
-              Admin Dashboard
-            </h1>
+            <span>{item.name}</span>
+          </Link>
+        );
+      })}
+    </nav>
 
-            <p className="text-xs text-gray-500">
-              Rotaract Lagos Prime
-            </p>
-          </div>
+    {/* Bottom */}
+    <div className="space-y-2 border-t border-border p-4">
 
-          {/* Admin profile */}
-          <div className="ml-auto flex items-center gap-3">
+      {/* Theme toggle */}
+      <button
+        type="button"
+        onClick={toggleDarkMode}
+        className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-muted transition hover:bg-hover hover:text-foreground"
+      >
+        {darkMode ? (
+          <Sun size={20} strokeWidth={2} />
+        ) : (
+          <Moon size={20} strokeWidth={2} />
+        )}
 
-            <div className="hidden text-right sm:block">
-              <p className="text-sm font-semibold">
-                Administrator
-              </p>
+        <span>
+          {darkMode ? "Light mode" : "Dark mode"}
+        </span>
+      </button>
 
-              <p className="text-xs text-gray-500">
-                Admin
-              </p>
-            </div>
+      {/* Back to website */}
+      <Link
+        href="/"
+        className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-muted transition hover:bg-hover hover:text-foreground"
+      >
+        <span>←</span>
+        Back to website
+      </Link>
 
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rotaract text-sm font-bold text-white">
-              A
-            </div>
+    </div>
+  </aside>
 
-          </div>
-        </header>
+  {/* Main area */}
+  <div className="lg:pl-64">
 
-        {/* Page content */}
-        <main className="p-4 sm:p-6 lg:p-8">
-          {children}
-        </main>
+    {/* Top bar */}
+    <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+
+      {/* Mobile menu button */}
+      <button
+        type="button"
+        onClick={() => setSidebarOpen(true)}
+        className="flex h-10 w-10 items-center justify-center rounded-lg text-muted hover:bg-hover hover:text-foreground lg:hidden"
+        aria-label="Open menu"
+      >
+        <Menu size={24} strokeWidth={2} />
+      </button>
+
+      {/* Page title */}
+      <div className="hidden sm:block">
+        <h1 className="text-lg font-bold">
+          Admin Dashboard
+        </h1>
+
+        <p className="text-xs text-muted">
+          Rotaract Lagos Prime
+        </p>
+      </div>
+
+      {/* Admin profile */}
+      <div className="ml-auto flex items-center gap-3">
+
+        <div className="hidden text-right sm:block">
+          <p className="text-sm font-semibold">
+            {user?.name || "Loading..."}
+          </p>
+
+          <p className="text-xs text-muted">
+            {user?.position || user?.accountType || "Admin"}
+          </p>
+        </div>
+
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rotaract text-sm font-bold text-white">
+          {user?.name
+            ? user.name
+                .split(" ")
+                .map((name) => name.charAt(0))
+                .join("")
+                .slice(0, 2)
+                .toUpperCase()
+            : "..."}
+        </div>
 
       </div>
-    </div>
-  );
+    </header>
+
+    {/* Page content */}
+    <main className="p-4 sm:p-6 lg:p-8">
+      {children}
+    </main>
+
+  </div>
+</div>
+
+);
 }

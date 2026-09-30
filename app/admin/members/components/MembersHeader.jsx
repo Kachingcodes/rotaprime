@@ -11,11 +11,11 @@ export default function MembersHeader({ onAddMember, onImportMembers }) {
           Membership
         </p>
 
-        <h1 className="mt-1 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+        <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Members
         </h1>
 
-        <p className="mt-2 max-w-xl text-sm leading-6 text-gray-500">
+        <p className="mt-2 max-w-xl text-sm leading-6 text-foreground/94">
           Manage Rotaract Lagos Prime members, applications, positions,
           and membership status.
         </p>

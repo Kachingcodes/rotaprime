@@ -30,7 +30,9 @@ export default function WelfarePage() {
   const [attendanceFilter, setAttendanceFilter] = useState("All");
   const [selectedMember, setSelectedMember] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [user, setUser] = useState(null);
 
+  
   const [selectedDate, setSelectedDate] = useState(
     getLocalDateString()
   );
@@ -232,21 +234,17 @@ if (exportType === "board") {
 }
 
   const headers = [
-    "Member ID",
     "First Name",
     "Last Name",
     "Position",
-    "Email",
     "Phone",
     "Attendance",
   ];
 
   const rows = exportMembers.map((member) => [
-    member.id,
     member.firstname || "",
     member.lastname || "",
     member.position || "Member",
-    member.email || "",
     member.phone || "",
     member.attendance || "Not Marked",
   ]);
@@ -368,6 +366,29 @@ const markAllNotificationsAsRead = async () => {
   }
 };
 
+useEffect(() => {
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch("/api/account/me");
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch current user.");
+      }
+
+      const data = await response.json();
+
+      setUser(data.user);
+    } catch (error) {
+      console.error(
+        "Welfare current user fetch error:",
+        error
+      );
+    }
+  };
+
+  fetchCurrentUser();
+}, []);
+
 
   return (
     <div className="space-y-6 p-4 lg:p-6">
@@ -375,6 +396,7 @@ const markAllNotificationsAsRead = async () => {
         notifications={notifications}
         onMarkAsRead={markNotificationAsRead}
         onMarkAllAsRead={markAllNotificationsAsRead}
+        user={user}
       />
 
       <WelfareStats
