@@ -139,8 +139,10 @@ export default function UserAccountsPage() {
           </select>
         </div>
 
-        {/* Accounts Table */}
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+
+        {/* Desktop Accounts Table */}
+
+        <div className="hidden overflow-hidden rounded-2xl border border-gray-200 bg-white md:block">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[850px]">
               <thead>
@@ -167,17 +169,17 @@ export default function UserAccountsPage() {
                 </tr>
               </thead>
 
-                <tbody>
-              {loading ? (
-                <tr>
+              <tbody>
+                {loading ? (
+                  <tr>
                     <td
-                        colSpan="5"
-                        className="px-6 py-12 text-center text-sm text-gray-500"
+                      colSpan="5"
+                      className="px-6 py-12 text-center text-sm text-gray-500"
                     >
-                        Loading accounts...
+                      Loading accounts...
                     </td>
-                </tr>
-              ) : filteredAccounts.length > 0 ? (
+                  </tr>
+                ) : filteredAccounts.length > 0 ? (
                   filteredAccounts.map((account) => (
                     <tr
                       key={account.id}
@@ -207,19 +209,19 @@ export default function UserAccountsPage() {
                         <span className="inline-flex items-center gap-2 text-sm text-gray-700">
                           {account.accountType === "Super Admin" ? (
                             <>
-                                <ShieldCheck
+                              <ShieldCheck
                                 size={16}
                                 className="text-[#d41367]"
-                                />
-                                Super Admin
+                              />
+                              Super Admin
                             </>
                           ) : (
                             <>
-                                <UserRound
-                                    size={16}
-                                    className="text-gray-400"
-                                />
-                                {account.position || "Member"}
+                              <UserRound
+                                size={16}
+                                className="text-gray-400"
+                              />
+                              {account.position || "Member"}
                             </>
                           )}
                         </span>
@@ -244,9 +246,10 @@ export default function UserAccountsPage() {
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center gap-2 text-sm text-gray-500">
                           <Clock3 size={15} />
+
                           {account.lastLogin
                             ? new Date(account.lastLogin).toLocaleString()
-                            : "Never" }
+                            : "Never"}
                         </span>
                       </td>
 
@@ -274,7 +277,123 @@ export default function UserAccountsPage() {
                 )}
               </tbody>
             </table>
+
           </div>
+        </div>
+
+        {/* Mobile Cards */}
+
+        <div className="space-y-4 md:hidden">
+          {loading ? (
+            <div className="rounded-2xl border border-gray-200 bg-white px-6 py-12 text-center text-sm text-gray-500">
+              Loading accounts...
+            </div>
+          ) : filteredAccounts.length > 0 ? (
+            filteredAccounts.map((account) => (
+              <div
+                key={account.id}
+                className="rounded-2xl border border-gray-200 bg-white p-5"
+              >
+                {/* Top */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#fce1ec] text-[#d41367]">
+                      <UserRound size={19} />
+                    </div>
+
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-gray-900">
+                    {account.name}
+                  </p>
+
+                  <p className="mt-0.5 truncate text-xs text-gray-500">
+                    {account.email}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
+                aria-label={`Actions for ${account.name}`}
+              >
+                <MoreHorizontal size={19} />
+              </button>
+            </div>
+
+
+            {/* Account Details */}
+            <div className="mt-5 space-y-3 border-t border-gray-100 pt-4">
+              {/* Account Type */}
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-xs font-medium text-gray-500">
+                  Account Type
+                </span>
+
+                <span className="inline-flex items-center gap-2 text-sm text-gray-700">
+                  {account.accountType === "Super Admin" ? (
+                    <>
+                      <ShieldCheck
+                        size={15}
+                        className="text-[#d41367]"
+                      />
+                      Super Admin
+                    </>
+                  ) : (
+                    <>
+                      <UserRound
+                        size={15}
+                        className="text-gray-400"
+                      />
+                      {account.position || "Member"}
+                    </>
+                  )}
+                </span>
+              </div>
+
+
+              {/* Status */}
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-xs font-medium text-gray-500">
+                  Status
+                </span>
+
+                {account.status === "Active" ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
+                    <CircleCheck size={13} />
+                    Active
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+                    <CircleX size={13} />
+                    Inactive
+                  </span>
+                )}
+              </div>
+
+
+              {/* Last Login */}
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-xs font-medium text-gray-500">
+                  Last Login
+                </span>
+
+                <span className="inline-flex items-center gap-2 text-right text-sm text-gray-500">
+                  <Clock3 size={14} />
+
+                  {account.lastLogin
+                    ? new Date(account.lastLogin).toLocaleString()
+                    : "Never"}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))
+
+        ) : ( <div className="rounded-2xl border border-gray-200 bg-white px-6 py-12 text-center text-sm text-gray-500">
+        No accounts found. </div>
+        )}
+
         </div>
 
         {/* Footer Count */}
