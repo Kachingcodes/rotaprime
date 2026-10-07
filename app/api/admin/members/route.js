@@ -12,7 +12,7 @@ export async function GET() {
         m.gender,
         m.phone,
         m.email,
-        m.dob,
+        TO_CHAR(m.dob, 'YYYY-MM-DD') AS dob,
         m.occupation,
         m.address,
         m.position_id,

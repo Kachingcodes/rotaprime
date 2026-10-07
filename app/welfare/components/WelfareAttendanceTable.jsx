@@ -84,7 +84,7 @@ export default function WelfareAttendanceTable({
 
                     <div>
                       <p className="text-sm font-medium text-gray-900 transition group-hover:text-rotaract">
-                        {member.firstname} {member.lastname}
+                        {member.lastname} {member.firstname}
                       </p>
 
                       <p className="mt-0.5 text-xs text-gray-500">

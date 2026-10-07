@@ -177,3 +177,28 @@ color 0.2s ease;
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+
+/* Thin scrollbar */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 9999px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}

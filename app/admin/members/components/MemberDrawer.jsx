@@ -157,7 +157,7 @@ export default function MemberDrawer({
                 </p>
 
                 <h2 className="mt-1 truncate text-lg font-bold text-gray-900 sm:text-xl">
-                  {member.firstname} {member.lastname}
+                  {member.lastname} {member.firstname}
                 </h2>
 
               </div>
@@ -389,7 +389,7 @@ export default function MemberDrawer({
                   <div className="min-w-0 flex-1">
 
                     <h3 className="truncate text-lg font-bold text-gray-900">
-                      {member.firstname} {member.lastname}
+                      {member.lastname} {member.firstname}
                     </h3>
 
                     <p className="mt-1 truncate text-sm text-gray-500">
@@ -418,13 +418,13 @@ export default function MemberDrawer({
                 <div className="grid gap-5 sm:grid-cols-2">
 
                   <Detail
-                    label="First Name"
-                    value={member.firstname}
+                    label="Last Name"
+                    value={member.lastname}
                   />
 
                   <Detail
-                    label="Last Name"
-                    value={member.lastname}
+                    label="First Name"
+                    value={member.firstname}
                   />
 
                   <Detail

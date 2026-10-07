@@ -164,9 +164,9 @@ export default function MembersTable({
       {/* ========================================
           TABLE
       ======================================== */}
-      <div className="overflow-hidden hidden lg:block rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:block">
 
-        <div className="overflow-x-auto">
+  <div className="max-h-[600px] overflow-auto thin-scrollbar">
 
           <table className="w-full min-w-[1050px] text-left">
 
@@ -226,7 +226,7 @@ export default function MembersTable({
                       <div className="min-w-0">
 
                         <p className="truncate font-semibold text-gray-900">
-                          {member.firstname} {member.lastname}
+                          {member.lastname} {member.firstname}
                         </p>
 
                         <p className="truncate text-sm text-gray-500">
@@ -335,7 +335,7 @@ export default function MembersTable({
       </div>
 
       {/* MOBILE ONLY */}
-<div className="space-y-3 flex flex-col lg:hidden">
+<div className="flex max-h-[600px] flex-col space-y-3 overflow-y-auto pr-1 lg:hidden thin-scrollbar">
 
   {members.map((member) => (
     <div
