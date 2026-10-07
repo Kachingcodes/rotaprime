@@ -1,19 +1,16 @@
 import { NextResponse } from "next/server";
-import { verifySession } from "./lib/session";
+
+import { getSession } from "./lib/get-session";
 
 export async function proxy(request) {
-  const token = request.cookies.get("session")?.value;
+  const session = await getSession();
 
-  // Not logged in
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  const session = await verifySession(token);
-
-  // Invalid or expired session
+  // Not logged in, expired session,
+  // or account has been deactivated.
   if (!session) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(
+      new URL("/login", request.url)
+    );
   }
 
   const pathname = request.nextUrl.pathname;
@@ -23,7 +20,9 @@ export async function proxy(request) {
     pathname.startsWith("/superadmin") &&
     session.accountType !== "Super Admin"
   ) {
-    return NextResponse.redirect(new URL("/admin", request.url));
+    return NextResponse.redirect(
+      new URL("/admin", request.url)
+    );
   }
 
   return NextResponse.next();

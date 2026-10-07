@@ -13,6 +13,7 @@ Menu,
 HeartHandshake,
 Moon,
 Sun,
+LogOut,
 } from "lucide-react";
 
 export default function AdminLayout({ children }) {
@@ -102,8 +103,25 @@ if (nextMode) {
   document.documentElement.classList.remove("dark");
   localStorage.setItem("theme", "light");
 }
-
 }
+
+
+async function handleLogout() {
+  try {
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      throw new Error("Unable to log out.");
+    }
+
+    window.location.href = "/login";
+  } catch (error) {
+    console.error("LOGOUT ERROR:", error);
+  }
+}
+
 
 function isActive(href) {
 if (href === "/admin") {
@@ -218,6 +236,20 @@ return ( <div className="min-h-screen bg-background text-foreground">
         <span>←</span>
         Back to website
       </Link>
+
+      {/* Logout */}
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-muted transition hover:bg-hover hover:text-foreground"
+      >
+        <LogOut
+          size={20}
+          strokeWidth={2}
+        />
+
+        <span>Log out</span>
+      </button>
 
     </div>
   </aside>

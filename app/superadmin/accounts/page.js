@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import {
   ArrowLeft,
   Search,
@@ -15,13 +16,14 @@ import {
 } from "lucide-react";
 
 import AddAccountModal from "./AddAccountModal";
-
+import AccountActions from "./AccountActions";
 
 
 export default function UserAccountsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [showAddAccount, setShowAddAccount] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
+  const [editingAccount, setEditingAccount] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,31 +40,123 @@ export default function UserAccountsPage() {
   });
 
 
-    useEffect(() => {
-    async function loadAccounts() {
-        try {
-        setLoading(true);
+  async function loadAccounts() {
+    try {
+    setLoading(true);
 
-        const response = await fetch("/api/superadmin/accounts");
+    const response = await fetch("/api/superadmin/accounts");
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(
-            data.error || "Unable to load accounts."
-            );
-        }
-
-        setAccounts(data.accounts || []);
-        } catch (error) {
-        console.error("Load accounts error:", error);
-        } finally {
-        setLoading(false);
-        }
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Unable to load accounts."
+      );
     }
 
+    setAccounts(data.accounts || []);
+
+    } catch (error) {
+    console.error("Load accounts error:", error);
+
+    toast.error(
+      error.message || "Unable to load accounts."
+    );
+
+    } finally {
+    setLoading(false);
+    }
+    }
+
+    useEffect(() => {
     loadAccounts();
     }, []);
+
+    function handleAddAccount() {
+    setEditingAccount(null);
+    setShowAccountModal(true);
+    }
+
+    function handleEditAccount(account) {
+    setEditingAccount(account);
+    setShowAccountModal(true);
+    }
+
+    function handleCloseAccountModal() {
+    setShowAccountModal(false);
+    setEditingAccount(null);
+    }
+
+    
+async function handleStatusChange(account) {
+  const nextStatus =
+    account.status === "Active" ? "Inactive" : "Active";
+
+  try {
+    const response = await fetch(
+      `/api/superadmin/accounts/${account.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: nextStatus,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Unable to update account status."
+      );
+    }
+
+    toast.success(
+      `Account ${nextStatus === "Active" ? "activated" : "deactivated"} successfully.`
+    );
+
+    await loadAccounts();
+  } catch (error) {
+    console.error("Change account status error:", error);
+
+    toast.error(
+      error.message || "Unable to update account status."
+    );
+  }
+}
+
+
+async function handleDeleteAccount(account) {
+  try {
+    const response = await fetch(
+      `/api/superadmin/accounts/${account.id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Unable to delete account."
+      );
+    }
+
+    toast.success("Account deleted successfully.");
+
+    await loadAccounts();
+  } catch (error) {
+    console.error("Delete account error:", error);
+
+    toast.error(
+      error.message || "Unable to delete account."
+    );
+  }
+}
 
   return (
     <main className="min-h-screen bg-[var(--cream)] px-5 py-8 transition-colors md:px-8">
@@ -103,7 +197,7 @@ export default function UserAccountsPage() {
 
           <button
             type="button"
-            onClick={() => setShowAddAccount(true)}
+            onClick={handleAddAccount}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#d41367] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#b91059]"
           >
             <Plus size={17} />
@@ -255,13 +349,13 @@ export default function UserAccountsPage() {
 
                       {/* Actions */}
                       <td className="px-6 py-4 text-right">
-                        <button
-                          type="button"
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
-                          aria-label={`Actions for ${account.name}`}
-                        >
-                          <MoreHorizontal size={19} />
-                        </button>
+                        <AccountActions
+                          account={account}
+                          onEdit={handleEditAccount}
+                          onStatusChange={handleStatusChange}
+                          onDelete={handleDeleteAccount}
+                        />
+
                       </td>
                     </tr>
                   ))
@@ -312,13 +406,13 @@ export default function UserAccountsPage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
-                aria-label={`Actions for ${account.name}`}
-              >
-                <MoreHorizontal size={19} />
-              </button>
+                <AccountActions
+                  account={account}
+                  onEdit={handleEditAccount}
+                  onStatusChange={handleStatusChange}
+                  onDelete={handleDeleteAccount}
+                />
+
             </div>
 
 
@@ -405,11 +499,14 @@ export default function UserAccountsPage() {
         </div>
       </div>
 
-      {showAddAccount && (
+      {showAccountModal && ( 
         <AddAccountModal
-            onClose={() => setShowAddAccount(false)}
-        />
+          account={editingAccount}
+          onClose={handleCloseAccountModal}
+          onSuccess={loadAccounts}
+      />
       )}
+
     </main>
   );
 }

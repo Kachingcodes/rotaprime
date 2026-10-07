@@ -10,6 +10,9 @@ KeyRound,
 X,
 Eye,
 EyeOff,
+Moon,
+Sun,
+LogOut,
 } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -49,6 +52,8 @@ useState(false);
 const [changingPassword, setChangingPassword] =
 useState(false);
 
+const [darkMode, setDarkMode] = useState(false);
+
 const today = new Intl.DateTimeFormat("en-NG", {
 weekday: "short",
 day: "numeric",
@@ -68,7 +73,6 @@ setShowPasswordModal(true);
 const closePasswordModal = () => {
 if (changingPassword) return;
 
-
 setShowPasswordModal(false);
 
 setCurrentPassword("");
@@ -79,14 +83,52 @@ setShowCurrentPassword(false);
 setShowNewPassword(false);
 setShowConfirmPassword(false);
 
+};
+
+const toggleTheme = () => {
+const nextMode = !darkMode;
+
+setDarkMode(nextMode);
+
+if (nextMode) {
+  document.documentElement.classList.add("dark");
+  localStorage.setItem("theme", "dark");
+} else {
+  document.documentElement.classList.remove("dark");
+  localStorage.setItem("theme", "light");
+}
+
+setShowUserMenu(false);
+
+};
+
+const handleLogout = async () => {
+try {
+const response = await fetch("/api/auth/logout", {
+method: "POST",
+});
+
+  if (!response.ok) {
+    throw new Error("Logout failed");
+  }
+
+  window.location.href = "/login";
+} catch (error) {
+  console.error("Logout error:", error);
+
+  toast.error("Unable to log out. Please try again.");
+}
 
 };
 
 const handleChangePassword = async (event) => {
 event.preventDefault();
 
-
-if (!currentPassword || !newPassword || !confirmPassword) {
+if (
+  !currentPassword ||
+  !newPassword ||
+  !confirmPassword
+) {
   toast.error("Please complete all password fields.");
   return;
 }
@@ -162,30 +204,26 @@ const initials = user?.name
 : "";
 
 return (
-<> <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
-    {/* Title */}
-    <div className="flex items-start gap-3">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rotaract/10 text-rotaract">
+  <> 
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    
+    {/* Title */} 
+    <div className="flex items-start gap-3"> 
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rotaract/10 text-rotaract"> 
         <HeartHandshake
           size={23}
           strokeWidth={2}
-        />
+         /> 
       </div>
 
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--dark)]">
           Welfare
         </h1>
 
         <p className="mt-1 text-sm text-gray-500">
-          Manage member attendance and
+          Manage member attendance and view member profiles.
         </p>
-
-        <p className="mt-1 text-sm text-gray-500">
-          view member profiles.
-        </p>
-        
       </div>
     </div>
 
@@ -204,62 +242,37 @@ return (
                 (current) => !current
               )
             }
-            className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-left transition hover:bg-gray-50"
+            className="flex items-center gap-2 text-left transition"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rotaract/10 text-xs font-bold text-rotaract">
+            <div className="flex h-9.5 w-9 shrink-0 items-center justify-center rounded-lg bg-rotaract text-md font-semibold text-white hover:bg-rotaract/80">
               {initials || (
                 <UserRound size={15} />
               )}
-            </div>
-
-            <div className="hidden min-w-0 sm:block">
-              <p className="max-w-[140px] truncate text-xs font-semibold text-gray-900">
-                {user.name}
-              </p>
-
-              <p className="max-w-[140px] truncate text-[10px] text-gray-400">
-                {user.position ||
-                  user.accountType ||
-                  "User"}
-              </p>
             </div>
           </button>
 
           {/* User Dropdown */}
           {showUserMenu && (
             <div className="absolute right-0 top-12 z-[100] w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
-
               {/* Account Info */}
-              <div className="border-b border-gray-100 px-4 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rotaract/10 text-sm font-bold text-rotaract">
-                    {initials || (
-                      <UserRound size={18} />
-                    )}
-                  </div>
+              <div className="border-b border-gray-100 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  {user.position && (
+                    <div className="">
+                      <p className="mt-0.5 text-xs font-medium text-gray-700">
+                        {user.position}
+                      </p>
 
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-gray-900">
-                      {user.name}
-                    </p>
+                      <p className="truncate text-sm font-semibold text-gray-900">
+                        {user.name}
+                      </p>
 
-                    <p className="truncate text-xs text-gray-500">
-                      {user.email}
-                    </p>
-                  </div>
+                      <p className="truncate text-xs text-gray-500">
+                        {user.email}
+                      </p>
+                    </div>
+                  )}
                 </div>
-
-                {user.position && (
-                  <div className="mt-3 rounded-lg bg-gray-50 px-3 py-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                      Position
-                    </p>
-
-                    <p className="mt-0.5 text-xs font-medium text-gray-700">
-                      {user.position}
-                    </p>
-                  </div>
-                )}
 
                 {user.lastLogin && (
                   <p className="mt-3 text-[11px] text-gray-400">
@@ -284,6 +297,42 @@ return (
 
                 Change Password
               </button>
+
+              {/* Theme Toggle */}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+              >
+                {darkMode ? (
+                  <Sun
+                    size={16}
+                    className="text-gray-400"
+                  />
+                ) : (
+                  <Moon
+                    size={16}
+                    className="text-gray-400"
+                  />
+                )}
+
+                {darkMode
+                  ? "Light Mode"
+                  : "Dark Mode"}
+              </button>
+
+              {/* Logout */}
+              <div className="border-t border-gray-100" />
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-gray-600 transition hover:bg-red-50 hover:text-red-600"
+              >
+                <LogOut size={16} />
+
+                Log out
+              </button>
             </div>
           )}
         </div>
@@ -298,10 +347,13 @@ return (
               (current) => !current
             )
           }
-          className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50 hover:text-gray-900"
+          className="relative flex h-9.5 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50 hover:text-gray-900"
           aria-label="Notifications"
         >
-          <Bell size={18} strokeWidth={2} />
+          <Bell
+            size={18}
+            strokeWidth={2}
+          />
 
           {unreadNotificationCount > 0 && (
             <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">
@@ -315,7 +367,6 @@ return (
         {/* Notification Dropdown */}
         {showNotifications && (
           <div className="absolute right-0 top-12 z-[100] w-[350px] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
-
             <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
               <div>
                 <h3 className="text-sm font-semibold text-gray-900">
@@ -427,7 +478,6 @@ return (
       }}
     >
       <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
-
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <div>
@@ -456,7 +506,6 @@ return (
           onSubmit={handleChangePassword}
           className="space-y-5 px-6 py-6"
         >
-
           {/* Current Password */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">

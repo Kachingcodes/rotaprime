@@ -263,7 +263,6 @@ export async function POST(request) {
 }
 
 
-
 export async function GET() {
   try {
     const result = await db.query(
@@ -275,36 +274,67 @@ export async function GET() {
         a.status,
         a.account_type AS "accountType",
         a.last_login AS "lastLogin",
+
         m.firstname,
         m.lastname,
+
+        current_term.id AS "boardTermId",
+        current_term.position_id AS "positionId",
+        current_term.start_date AS "startDate",
+        current_term.end_date AS "endDate",
+        current_term.status AS "termStatus",
+
         p.name AS position
+
       FROM accounts a
+
       LEFT JOIN members m
         ON m.id = a.member_id
+
       LEFT JOIN LATERAL (
         SELECT
-          bt.position_id
+          bt.id,
+          bt.position_id,
+          bt.start_date,
+          bt.end_date,
+          bt.status
         FROM board_terms bt
         WHERE bt.member_id = a.member_id
         ORDER BY bt.created_at DESC
         LIMIT 1
       ) current_term
         ON true
+
       LEFT JOIN positions p
         ON p.id = current_term.position_id
+
       ORDER BY a.created_at DESC
       `
     );
 
     const accounts = result.rows.map((account) => ({
       id: account.id,
+
       name: account.memberId
         ? `${account.firstname} ${account.lastname}`
         : "Super Admin",
+
       email: account.email,
+
       accountType: account.accountType,
+
+      memberId: account.memberId,
+
       position: account.position || null,
+      positionId: account.positionId || null,
+
+      boardTermId: account.boardTermId || null,
+      startDate: account.startDate || null,
+      endDate: account.endDate || null,
+      termStatus: account.termStatus || null,
+
       status: account.status,
+
       lastLogin: account.lastLogin,
     }));
 
@@ -322,5 +352,3 @@ export async function GET() {
     );
   }
 }
-
-
