@@ -32,11 +32,21 @@ const attendanceConfig = {
   },
 };
 
+
 export default function WelfareAttendanceTable({
   members = [],
   onMemberClick,
   onAttendanceChange,
 }) {
+
+  const sortedMembers = [...members].sort((a, b) =>
+  (a.lastname || "").localeCompare(
+    b.lastname || "",
+    undefined,
+    { sensitivity: "base" }
+  )
+);
+  
   return (
     <>
       {/* Desktop Table */}
@@ -65,7 +75,7 @@ export default function WelfareAttendanceTable({
           </thead>
 
           <tbody>
-            {members.map((member) => (
+            {sortedMembers.map((member) => (
               <tr
                 key={member.id}
                 className="group border-b border-gray-100 last:border-0 hover:bg-gray-50/60"
@@ -196,7 +206,7 @@ export default function WelfareAttendanceTable({
 
       {/* Mobile List */}
       <div className="divide-y divide-gray-100 md:hidden">
-        {members.map((member) => {
+        {sortedMembers.map((member) => {
           const attendanceStatus =
             member.attendance || "Not Marked";
 

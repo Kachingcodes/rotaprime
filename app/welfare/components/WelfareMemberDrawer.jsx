@@ -157,7 +157,7 @@ export default function WelfareMemberDrawer({
 
               <div className="min-w-0">
                 <h2 className="truncate text-lg font-semibold text-gray-900">
-                  {member.firstname} {member.lastname}
+                  {member.lastname} {member.firstname}
                 </h2>
 
                 <p className="mt-0.5 text-sm text-gray-500">
