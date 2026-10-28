@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import { Download } from "lucide-react";
 import MembersHeader from "./components/MembersHeader";
-//import MembersStats from "./components/MembersStats";
 import MembersTable from "./components/MembersTable";
 import MemberDrawer from "./components/MemberDrawer";
 import MemberFormModal from "./components/MemberFormModal";
 import MemberImportModal from "./components/MemberImportModal";
+
 
 
 export default function MembersPage() {
@@ -181,6 +181,56 @@ async function assignPosition(member, positionId) {
   setShowMemberModal(false);
 }
 
+const handleExport = () => {
+  const headers = [
+    "Full Name",
+    "Date of Birth",
+    "Gender",
+    "Phone Number",
+    "Email",
+    "Address",
+  ];
+
+  const rows = filteredMembers.map((member) => [
+    `${member.firstname || ""} ${member.lastname || ""}`.trim(),
+    member.dob ? String(member.dob).split("T")[0] : "",
+    member.gender || "",
+    member.phone || "",
+    member.email || "",
+    member.address || "",
+  ]);
+
+  const escapeCsvValue = (value) => {
+    const stringValue = String(value ?? "");
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  };
+
+  const csv = [
+    headers.map(escapeCsvValue).join(","),
+    ...rows.map((row) =>
+      row.map(escapeCsvValue).join(",")
+    ),
+  ].join("\n");
+
+  const blob = new Blob([`\uFEFF${csv}`], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = `rotaract-members-${new Date()
+    .toISOString()
+    .split("T")[0]}.csv`;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
+};
+
   return (
     <div className="space-y-6">
 
@@ -202,15 +252,27 @@ async function assignPosition(member, positionId) {
         </div>
       )}
 
-      {/* Search */}
+      {/* Search and Export */}
       <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search members by name, email or phone..."
-          className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none focus:border-rotaract focus:bg-white"
-        />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search members by name, email or phone..."
+            className="w-full flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none focus:border-rotaract focus:bg-white"
+          />
+
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={loading || filteredMembers.length === 0}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-rotaract px-5 py-3 text-sm font-semibold text-white transition hover:bg-rotaract-dark disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={18} />
+            Export Members
+          </button>
+        </div>
       </div>
 
       <MembersTable
